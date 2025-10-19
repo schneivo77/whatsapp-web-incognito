@@ -1,53 +1,45 @@
-# Name des Workflows, der in der "Actions"-Übersicht auf GitHub angezeigt wird.
+# Name of the workflow, displayed in the GitHub Actions tab.
 name: Convert to Safari & iOS Extension
 
-# Dieser Abschnitt legt fest, wann die Action ausgeführt werden soll.
+# Defines the triggers for this workflow.
 on:
-  # Bei jedem Push (Upload von Änderungen) auf den 'main'-Branch.
-  # Ändere 'main' zu 'master', falls das dein Hauptbranch ist.
+  # Runs on every push to the 'main' branch.
   push:
-    branches: [ safari-extension ]
+    branches: [ main ]
 
-  # Ermöglicht das manuelle Starten des Workflows über die GitHub-Oberfläche.
+  # Allows you to run this workflow manually from the Actions tab.
   workflow_dispatch:
 
-# Definiert die Aufgaben (Jobs), die der Workflow ausführen soll.
+# Defines the sequence of jobs to be executed.
 jobs:
-  # Wir definieren einen einzigen Job namens 'build-and-convert'.
+  # A single job in this workflow, named 'build-and-convert'.
   build-and-convert:
-    # WICHTIG: Der Befehl 'xcrun' ist nur unter macOS verfügbar.
-    # Deshalb müssen wir eine von GitHub gehostete virtuelle macOS-Maschine verwenden.
+    # Specifies the runner environment. macOS is required for 'xcrun'.
     runs-on: macos-latest
 
-    # Definiert die einzelnen Schritte, die in diesem Job ausgeführt werden.
+    # Contains the sequence of steps for this job.
     steps:
-      # Schritt 1: Repository-Code herunterladen
-      # Dieser Schritt lädt den Code deines Repositories auf die virtuelle Maschine,
-      # damit die nachfolgenden Befehle darauf zugreifen können.
+      # Step 1: Check out the repository's code so the runner can access it.
       - name: Check out the repository code
         uses: actions/checkout@v4
 
-      # Schritt 2: Die Konvertierung durchführen
-      # Dies ist der Kernschritt, der deinen Befehl ausführt.
+      # Step 2: Run the core conversion command.
       - name: Convert Chrome Extension to Safari/iOS
         run: |
-          # Führe das Konvertierungs-Tool von Apple aus.
-          # Passe den letzten Pfad an! Er muss auf das Verzeichnis zeigen,
-          # in dem sich deine 'manifest.json'-Datei befindet.
+          # Execute Apple's web extension converter tool.
+          # The final path must point to the directory containing your manifest.json.
           xcrun safari-web-extension-converter \
             --project-location ./safari-build \
             --no-open \
             --no-prompt \
             .
 
-      # Schritt 3: Das Ergebnis als Artefakt hochladen
-      # Ein Artefakt ist eine Datei oder ein Ordner, der während eines Workflows erstellt
-      # und für den Download gespeichert wird.
+      # Step 3: Upload the output as a build artifact.
+      # An artifact is a file or collection of files produced during a run.
       - name: Upload the generated Xcode project
         uses: actions/upload-artifact@v4
         with:
-          # Der Name des Artefakts, wie es auf der Ergebnisseite angezeigt wird.
+          # The name of the artifact file that will be available for download.
           name: safari-ios-extension-project
-          # Der Pfad zum Ordner, der hochgeladen werden soll.
-          # Dies muss mit dem Wert von '--project-location' aus dem vorherigen Schritt übereinstimmen.
+          # The path to the folder to upload. Must match the '--project-location' argument above.
           path: ./safari-build
