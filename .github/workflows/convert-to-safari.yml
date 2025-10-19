@@ -1,0 +1,53 @@
+# Name des Workflows, der in der "Actions"-Übersicht auf GitHub angezeigt wird.
+name: Convert to Safari & iOS Extension
+
+# Dieser Abschnitt legt fest, wann die Action ausgeführt werden soll.
+on:
+  # Bei jedem Push (Upload von Änderungen) auf den 'main'-Branch.
+  # Ändere 'main' zu 'master', falls das dein Hauptbranch ist.
+  push:
+    branches: [ safari-extension ]
+
+  # Ermöglicht das manuelle Starten des Workflows über die GitHub-Oberfläche.
+  workflow_dispatch:
+
+# Definiert die Aufgaben (Jobs), die der Workflow ausführen soll.
+jobs:
+  # Wir definieren einen einzigen Job namens 'build-and-convert'.
+  build-and-convert:
+    # WICHTIG: Der Befehl 'xcrun' ist nur unter macOS verfügbar.
+    # Deshalb müssen wir eine von GitHub gehostete virtuelle macOS-Maschine verwenden.
+    runs-on: macos-latest
+
+    # Definiert die einzelnen Schritte, die in diesem Job ausgeführt werden.
+    steps:
+      # Schritt 1: Repository-Code herunterladen
+      # Dieser Schritt lädt den Code deines Repositories auf die virtuelle Maschine,
+      # damit die nachfolgenden Befehle darauf zugreifen können.
+      - name: Check out the repository code
+        uses: actions/checkout@v4
+
+      # Schritt 2: Die Konvertierung durchführen
+      # Dies ist der Kernschritt, der deinen Befehl ausführt.
+      - name: Convert Chrome Extension to Safari/iOS
+        run: |
+          # Führe das Konvertierungs-Tool von Apple aus.
+          # Passe den letzten Pfad an! Er muss auf das Verzeichnis zeigen,
+          # in dem sich deine 'manifest.json'-Datei befindet.
+          xcrun safari-web-extension-converter \
+            --project-location ./safari-build \
+            --no-open \
+            --no-prompt \
+            .
+
+      # Schritt 3: Das Ergebnis als Artefakt hochladen
+      # Ein Artefakt ist eine Datei oder ein Ordner, der während eines Workflows erstellt
+      # und für den Download gespeichert wird.
+      - name: Upload the generated Xcode project
+        uses: actions/upload-artifact@v4
+        with:
+          # Der Name des Artefakts, wie es auf der Ergebnisseite angezeigt wird.
+          name: safari-ios-extension-project
+          # Der Pfad zum Ordner, der hochgeladen werden soll.
+          # Dies muss mit dem Wert von '--project-location' aus dem vorherigen Schritt übereinstimmen.
+          path: ./safari-build
