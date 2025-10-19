@@ -5,7 +5,7 @@ name: Convert to Safari & iOS Extension
 on:
   # Runs on every push to the 'main' branch.
   push:
-    branches: [ main ]
+    branches: [ safari-extension ]
 
   # Allows you to run this workflow manually from the Actions tab.
   workflow_dispatch:
@@ -40,6 +40,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           # The name of the artifact file that will be available for download.
-          name: safari-ios-extension-project
+          name: WAIncognito-Safari-Extension
           # The path to the folder to upload. Must match the '--project-location' argument above.
           path: ./safari-build
