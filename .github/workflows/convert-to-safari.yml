@@ -42,4 +42,6 @@ jobs:
           # The name of the artifact file that will be available for download.
           name: WAIncognito-Safari-Extension
           # The path to the folder to upload. Must match the '--project-location' argument above.
-          path: ./safari-build
+          path: |
+            ./safari-build
+            .
