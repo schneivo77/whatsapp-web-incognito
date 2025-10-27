@@ -10,10 +10,9 @@ on:
   # Allows you to run this workflow manually from the Actions tab.
   workflow_dispatch:
 
-# Defines the sequence of jobs to be executed.
 jobs:
   # A single job in this workflow, named 'build-and-convert'.
-  build-and-convert:
+  create-safari-extension:
     # Specifies the runner environment. macOS is required for 'xcrun'.
     runs-on: macos-latest
 
@@ -32,22 +31,21 @@ jobs:
           mv !(extension-source|.github) extension-source/
           echo "Source files moved into ./extension-source"
 
-          # Execute Apple's web extension converter tool.
-          # The final path must point to the directory containing your manifest.json.
+          # Execute Apple's web extension converter tool
           xcrun safari-web-extension-converter \
-            --project-location ./safari-build \
+            --project-location ./safari-extension-build \
             --no-open \
             --no-prompt \
             ./extension-source
+          echo "Safari Extension created in ./safari-extension-build"
 
       # Step 3: Upload the output as a build artifact.
-      # An artifact is a file or collection of files produced during a run.
       - name: Upload the generated Xcode project
         uses: actions/upload-artifact@v4
         with:
           # The name of the artifact file that will be available for download.
           name: WAIncognito-Safari-Extension
-          # The path to the folder to upload. Must match the '--project-location' argument above.
+          # The paths to the folders to upload.
           path: |
-            ./safari-build
+            ./safari-extension-build
             ./extension-source
