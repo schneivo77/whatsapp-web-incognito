@@ -1,9 +1,9 @@
 # Name of the workflow, displayed in the GitHub Actions tab.
-name: Convert to Safari & iOS Extension
+name: Convert to Safari (macOS & iOS) Extension
 
 # Defines the triggers for this workflow.
 on:
-  # Runs on every push to the 'main' branch.
+  # Runs on every push to the 'master' branch.
   push:
     branches: [ safari-extension ]
 
@@ -11,8 +11,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  # A single job in this workflow, named 'build-and-convert'.
-  create-safari-extension:
+  convert-to-safari-extension:
     # Specifies the runner environment. macOS is required for 'xcrun'.
     runs-on: macos-latest
 
